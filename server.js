@@ -8,6 +8,7 @@ const commentsRoutes = require("./routes/comments/comments");
 const app = express();
 
 // Middlewares
+app.use(express.json()); // Pass incoming data
 
 // ROUTES
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -18,7 +19,7 @@ app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/posts", postsRoutes);
 
 // COMMENTS ROUTES
-app.use('/api/v1/comments', commentsRoutes);
+app.use("/api/v1/comments", commentsRoutes);
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 // Error handler middlewares

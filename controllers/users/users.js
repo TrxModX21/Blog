@@ -1,8 +1,36 @@
+const bcrypt = require("bcryptjs");
+const User = require("../../models/user/User");
+
 const registerController = async (req, res) => {
+  const { fullname, email, password } = req.body;
+
   try {
+    // Check if user already registered (email)
+    const userRegistered = await User.findOne({ email });
+
+    // Throw an error
+    if (userRegistered) {
+      res.json({
+        status: "failed",
+        msg: "User already exist!",
+      });
+    }
+
+    // HASH PASSWORD
+    const salt = await bcrypt.genSalt(10);
+    const passwordHashed = await bcrypt.hash(password, salt);
+
+    // REGISTERING THE USER
+    const user = await User.create({
+      fullname,
+      email,
+      password: passwordHashed,
+    });
+
     res.json({
       status: "success",
-      user: "User registered successfully",
+      msg: "User registered successfully",
+      data: user,
     });
   } catch (err) {
     res.json(err);
