@@ -112,14 +112,23 @@ const userProfileController = async (req, res, next) => {
   }
 };
 
-const uploadPhotoController = async (req, res) => {
+const uploadPhotoController = async (req, res, next) => {
   try {
+    const { fullname, email, profileImage } = await User.findByIdAndUpdate(
+      req.user,
+      {
+        profileImage: req.file.path,
+      },
+      { new: true }
+    );
+
     res.json({
       status: "success",
-      user: "User profile photo",
+      msg: "User profile photo updated!",
+      data: { fullname, email, profileImage },
     });
   } catch (err) {
-    res.json(err);
+    return next(appError(err.message));
   }
 };
 
@@ -143,7 +152,7 @@ const updatePasswordController = async (req, res, next) => {
       // HASH PASSWORD
       const salt = await bcrypt.genSalt(10);
       const passwordHashed = await bcrypt.hash(password, salt);
-      
+
       // UPDATE USER
       await User.findByIdAndUpdate(
         req.user,

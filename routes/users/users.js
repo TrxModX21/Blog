@@ -1,4 +1,5 @@
 const express = require("express");
+const multer = require("multer");
 const {
   registerController,
   loginController,
@@ -11,8 +12,10 @@ const {
   logoutController,
 } = require("../../controllers/users/users");
 const isLogin = require("../../middlewares/isLogin");
+const storage = require("../../config/cloudinary");
 
 const userRoutes = express.Router();
+const upload = multer({ storage });
 
 // POST /api/v1/users/register
 userRoutes.post("/register", registerController);
@@ -35,8 +38,13 @@ userRoutes.put("/update-password", isLogin, updatePasswordController);
 // GET /api/v1/users/:id
 userRoutes.get("/:id", userDetailsController);
 
-// PUT /api/v1/users/profile-photo-upload/:id
-userRoutes.put("/profile-photo-upload/:id", uploadPhotoController);
+// PUT /api/v1/users/profile-photo-upload
+userRoutes.put(
+  "/profile-photo-upload",
+  isLogin,
+  upload.single("profile_img"),
+  uploadPhotoController
+);
 
 // PUT /api/v1/users/cover-photo-upload/:id
 userRoutes.put("/cover-photo-upload/:id", uploadCoverPhotoController);
