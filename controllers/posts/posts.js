@@ -43,14 +43,16 @@ const createPostController = async (req, res, next) => {
   }
 };
 
-const fetchPostsController = async (req, res) => {
+const fetchPostsController = async (req, res, next) => {
   try {
-    res.json({
+    const posts = await Post.find();
+
+    return res.json({
       status: "success",
-      user: "Post fetched!",
+      data: posts,
     });
   } catch (err) {
-    res.json(err);
+    return next(appError(err.message));
   }
 };
 
@@ -62,7 +64,7 @@ const fetchSinglePostController = async (req, res, next) => {
     // GET THE POST
     const post = await Post.findById(id);
 
-    res.json({
+    return res.json({
       status: "success",
       data: post,
     });
