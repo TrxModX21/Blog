@@ -43,7 +43,7 @@ const createPostController = async (req, res, next) => {
   }
 };
 
-const fetchPostController = async (req, res) => {
+const fetchPostsController = async (req, res) => {
   try {
     res.json({
       status: "success",
@@ -54,14 +54,23 @@ const fetchPostController = async (req, res) => {
   }
 };
 
-const fetchPostDetailController = async (req, res) => {
+const fetchSinglePostController = async (req, res, next) => {
   try {
+    // GET ID FROM PARAMS
+    const id = req.params.id;
+
+    // GET THE POST
+    const post = await Post.findById(id);
+
     res.json({
       status: "success",
-      user: "Post details!",
+      data: post,
     });
   } catch (err) {
-    res.json(err);
+    if (err.kind === "ObjectId") {
+      return next(appError("Post not found!", 404));
+    }
+    return next(appError(err.message));
   }
 };
 
@@ -89,8 +98,8 @@ const updatePostController = async (req, res) => {
 
 module.exports = {
   createPostController,
-  fetchPostController,
-  fetchPostDetailController,
+  fetchPostsController,
+  fetchSinglePostController,
   deletePostController,
   updatePostController,
 };

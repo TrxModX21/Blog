@@ -2,8 +2,8 @@ const express = require("express");
 const multer = require("multer");
 const {
   createPostController,
-  fetchPostController,
-  fetchPostDetailController,
+  fetchPostsController,
+  fetchSinglePostController,
   deletePostController,
   updatePostController,
 } = require("../../controllers/posts/posts");
@@ -22,10 +22,10 @@ postsRoutes.post(
 );
 
 // GET /api/v1/posts
-postsRoutes.get("/", fetchPostController);
+postsRoutes.get("/", fetchPostsController);
 
 // GET /api/v1/posts/:id
-postsRoutes.get("/:id", fetchPostDetailController);
+postsRoutes.get("/:id", fetchSinglePostController);
 
 // DELETE /api/v1/posts/delete/:id
 postsRoutes.delete("/delete/:id", deletePostController);
