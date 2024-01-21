@@ -76,14 +76,34 @@ const fetchSinglePostController = async (req, res, next) => {
   }
 };
 
-const deletePostController = async (req, res) => {
+const deletePostController = async (req, res, next) => {
   try {
-    res.json({
+    // FIND THE POST
+    const post = await Post.findById(req.params.id);
+    const user = await User.findById(req.user);
+
+    // CHECK IF THE POST BELONGS TO CURRENT USER LOGIN
+    if (post.user.toString() !== req.user) {
+      return next(appError("You are not allowed to delete this post!", 403));
+    }
+
+    // DELETE THE POST
+    const deletedPost = await Post.findByIdAndDelete(req.params.id);
+    user.posts.splice(user.posts.indexOf(req.params.id), 1);
+
+    // RESAVE USER
+    user.save();
+
+    return res.json({
       status: "success",
-      user: "Post deleted!",
+      msg: "Post deleted!",
+      data: deletedPost,
     });
   } catch (err) {
-    res.json(err);
+    if (err.kind === "ObjectId") {
+      return next(appError("Post not found!", 404));
+    }
+    return next(appError(err.message));
   }
 };
 

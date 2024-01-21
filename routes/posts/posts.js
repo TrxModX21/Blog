@@ -28,7 +28,7 @@ postsRoutes.get("/", fetchPostsController);
 postsRoutes.get("/:id", fetchSinglePostController);
 
 // DELETE /api/v1/posts/delete/:id
-postsRoutes.delete("/delete/:id", deletePostController);
+postsRoutes.delete("/delete/:id", isLogin, deletePostController);
 
 // PUT /api/v1/posts/update/:id
 postsRoutes.put("/update/:id", updatePostController);
