@@ -8,8 +8,7 @@ const {
   uploadPhotoController,
   uploadCoverPhotoController,
   updatePasswordController,
-  updateUserController,
-  logoutController,
+  updateUserController,  
 } = require("../../controllers/users/users");
 const isLogin = require("../../middlewares/isLogin");
 const storage = require("../../config/cloudinary");
@@ -22,9 +21,6 @@ userRoutes.post("/register", registerController);
 
 // POST /api/v1/users/login
 userRoutes.post("/login", loginController);
-
-// GET /api/v1/users/logout
-userRoutes.get("/logout", logoutController);
 
 // GET /api/v1/users/profile
 userRoutes.get("/profile", isLogin, userProfileController);

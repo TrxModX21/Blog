@@ -230,17 +230,6 @@ const updateUserController = async (req, res, next) => {
   }
 };
 
-const logoutController = async (req, res) => {
-  try {
-    res.json({
-      status: "success",
-      user: "User logout",
-    });
-  } catch (err) {
-    res.json(err);
-  }
-};
-
 module.exports = {
   registerController,
   loginController,
@@ -249,6 +238,5 @@ module.exports = {
   uploadPhotoController,
   uploadCoverPhotoController,
   updatePasswordController,
-  updateUserController,
-  logoutController,
+  updateUserController,  
 };

@@ -1,4 +1,5 @@
 const express = require("express");
+const multer = require("multer");
 const {
   createPostController,
   fetchPostController,
@@ -6,11 +7,19 @@ const {
   deletePostController,
   updatePostController,
 } = require("../../controllers/posts/posts");
+const isLogin = require("../../middlewares/isLogin");
+const storage = require("../../config/cloudinary");
 
 const postsRoutes = express.Router();
+const upload = multer({ storage });
 
 // POST /api/v1/posts/create
-postsRoutes.post("/create", createPostController);
+postsRoutes.post(
+  "/create",
+  isLogin,
+  upload.single("post_img"),
+  createPostController
+);
 
 // GET /api/v1/posts
 postsRoutes.get("/", fetchPostController);

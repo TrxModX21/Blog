@@ -1,11 +1,41 @@
-const createPostController = async (req, res) => {
+const Post = require("../../models/post/Post");
+const User = require("../../models/user/User");
+const appError = require("../../utils/appError");
+
+const createPostController = async (req, res, next) => {
+  const { title, description, category } = req.body;
   try {
-    res.json({
+    // VALIDATE THE FORM FIELD
+    if (!title || !description || category || !req.file) {
+      return next(
+        appError("title, description, category, and image field are required!", 400)
+      );
+    }
+
+    // FIND THE USER
+    const user = await User.findById(req.user);
+
+    // CREATE POST
+    const post = await Post.create({
+      title,
+      description,
+      category,
+      user: user._id,
+      image: req.file.path,
+    });
+
+    // PUSH CREATED POST INTO USER POST LIST
+    user.posts.push(post._id);
+
+    // RESAVE USER
+    user.save();
+
+    return res.json({
       status: "success",
-      user: "Post Created!",
+      data: post,
     });
   } catch (err) {
-    res.json(err);
+    return next(appError(err.message));
   }
 };
 
