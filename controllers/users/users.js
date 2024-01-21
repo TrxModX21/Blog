@@ -33,7 +33,7 @@ const registerController = async (req, res, next) => {
       password: passwordHashed,
     });
 
-    res.json({
+    return res.json({
       status: "success",
       msg: "User registered successfully",
       data: user,
@@ -67,7 +67,7 @@ const loginController = async (req, res, next) => {
 
     const { fullname, _id } = user;
 
-    res.json({
+    return res.json({
       status: "success",
       msg: "User login successfully",
       data: { fullname, _id },
@@ -85,7 +85,7 @@ const userDetailsController = async (req, res, next) => {
     const user = await User.findById(userId);
     const { fullname, email, posts, comments } = user;
 
-    res.json({
+    return res.json({
       status: "success",
       data: {
         fullname,
@@ -103,7 +103,7 @@ const userProfileController = async (req, res, next) => {
   try {
     const user = await User.findById(req.user);
 
-    res.json({
+    return res.json({
       status: "success",
       data: user,
     });
@@ -114,32 +114,47 @@ const userProfileController = async (req, res, next) => {
 
 const uploadPhotoController = async (req, res, next) => {
   try {
-    const { fullname, email, profileImage } = await User.findByIdAndUpdate(
-      req.user,
-      {
-        profileImage: req.file.path,
-      },
-      { new: true }
-    );
+    if (req.file) {
+      const { fullname, email, profileImage } = await User.findByIdAndUpdate(
+        req.user,
+        {
+          profileImage: req.file.path,
+        },
+        { new: true }
+      );
 
-    res.json({
-      status: "success",
-      msg: "User profile photo updated!",
-      data: { fullname, email, profileImage },
-    });
+      return res.json({
+        status: "success",
+        msg: "User profile photo updated!",
+        data: { fullname, email, profileImage },
+      });
+    }
+    return next(appError("Please send image file!"));
   } catch (err) {
     return next(appError(err.message));
   }
 };
 
-const uploadCoverPhotoController = async (req, res) => {
+const uploadCoverPhotoController = async (req, res, next) => {
   try {
-    res.json({
-      status: "success",
-      user: "User profile cover",
-    });
+    if (req.file) {
+      const { fullname, email, coverImage } = await User.findByIdAndUpdate(
+        req.user,
+        {
+          coverImage: req.file.path,
+        },
+        { new: true }
+      );
+
+      return res.json({
+        status: "success",
+        msg: "User profile photo updated!",
+        data: { fullname, email, coverImage },
+      });
+    }
+    return next(appError("Please send image file!"));
   } catch (err) {
-    res.json(err);
+    return next(appError(err.message));
   }
 };
 
@@ -205,7 +220,7 @@ const updateUserController = async (req, res, next) => {
       }
     );
 
-    res.json({
+    return res.json({
       status: "success",
       msg: "Data updated!",
       data: updatedUser,

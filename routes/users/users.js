@@ -35,9 +35,6 @@ userRoutes.put("/update", isLogin, updateUserController);
 // PUT /api/v1/users/update-password
 userRoutes.put("/update-password", isLogin, updatePasswordController);
 
-// GET /api/v1/users/:id
-userRoutes.get("/:id", userDetailsController);
-
 // PUT /api/v1/users/profile-photo-upload
 userRoutes.put(
   "/profile-photo-upload",
@@ -46,7 +43,15 @@ userRoutes.put(
   uploadPhotoController
 );
 
-// PUT /api/v1/users/cover-photo-upload/:id
-userRoutes.put("/cover-photo-upload/:id", uploadCoverPhotoController);
+// PUT /api/v1/users/cover-photo-upload
+userRoutes.put(
+  "/cover-photo-upload",
+  isLogin,
+  upload.single("cover_img"),
+  uploadCoverPhotoController
+);
+
+// GET /api/v1/users/:id
+userRoutes.get("/:id", userDetailsController);
 
 module.exports = userRoutes;
