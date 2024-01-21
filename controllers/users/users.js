@@ -134,14 +134,30 @@ const uploadCoverPhotoController = async (req, res) => {
   }
 };
 
-const updatePasswordController = async (req, res) => {
+const updatePasswordController = async (req, res, next) => {
+  const { password } = req.body;
+
   try {
+    // CHECK IF USER UPDATING THE PASSWORD
+    if (password) {
+      // HASH PASSWORD
+      const salt = await bcrypt.genSalt(10);
+      const passwordHashed = await bcrypt.hash(password, salt);
+      
+      // UPDATE USER
+      await User.findByIdAndUpdate(
+        req.user,
+        { password: passwordHashed },
+        { new: true }
+      );
+    }
+
     res.json({
       status: "success",
-      user: "User password update",
+      user: "User password updated!",
     });
   } catch (err) {
-    res.json(err);
+    return next(appError(err.message));
   }
 };
 
