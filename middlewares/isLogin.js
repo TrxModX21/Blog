@@ -15,11 +15,11 @@ const isLogin = (req, res, next) => {
 
   if (tokenResult.status === "failed") {
     return next(appError("Invalid/expired token, please login", 401));
-  } else {
-    // SAVE THE USER INTO REQUEST OBJECT
-    req.user = tokenResult.id;
-    next();
   }
+  // SAVE THE USER INTO REQUEST OBJECT
+  req.user = tokenResult.id;
+
+  next();
 };
 
 module.exports = isLogin;

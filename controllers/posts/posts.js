@@ -4,11 +4,15 @@ const appError = require("../../utils/appError");
 
 const createPostController = async (req, res, next) => {
   const { title, description, category } = req.body;
+
   try {
     // VALIDATE THE FORM FIELD
-    if (!title || !description || category || !req.file) {
+    if (!title || !description || !category || !req.file) {
       return next(
-        appError("title, description, category, and image field are required!", 400)
+        appError(
+          "title, description, category, and image field are required!",
+          400
+        )
       );
     }
 

@@ -55,7 +55,11 @@ const loginController = async (req, res, next) => {
 
     // Throw an error
     if (!user) {
-      return next(appError("This email not registering in our database!"));
+      return next(
+        appError(
+          "This email not registering in our database, please register first!"
+        )
+      );
     }
 
     // Verify password hash
@@ -82,8 +86,9 @@ const userDetailsController = async (req, res, next) => {
   try {
     // GET USER ID FROM PARAMS
     const userId = req.params.id;
-    const user = await User.findById(userId);
-    const { fullname, email, posts, comments } = user;
+    const { fullname, email, posts, comments } = await User.findById(
+      userId
+    ).populate("posts");
 
     return res.json({
       status: "success",
@@ -238,5 +243,5 @@ module.exports = {
   uploadPhotoController,
   uploadCoverPhotoController,
   updatePasswordController,
-  updateUserController,  
+  updateUserController,
 };
