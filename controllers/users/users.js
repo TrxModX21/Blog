@@ -10,7 +10,7 @@ const registerController = async (req, res) => {
 
     // Throw an error
     if (userRegistered) {
-      res.json({
+      return res.json({
         status: "failed",
         msg: "User already exist!",
       });
@@ -38,10 +38,34 @@ const registerController = async (req, res) => {
 };
 
 const loginController = async (req, res) => {
+  const { email, password } = req.body;
+
   try {
+    // Check if email exist
+    const user = await User.findOne({ email });
+
+    // Throw an error
+    if (!user) {
+      return res.json({
+        status: "failed",
+        msg: "This email not registering in our database!",
+      });
+    }
+
+    // Verify password hash
+    const checkPasswordHash = await bcrypt.compare(password, user.password);
+
+    if (!checkPasswordHash) {
+      return res.json({
+        status: "failed",
+        msg: "Invalid credentials!",
+      });
+    }
+
     res.json({
       status: "success",
-      user: "User login successfully",
+      msg: "User login successfully",
+      data: user,
     });
   } catch (err) {
     res.json(err);
