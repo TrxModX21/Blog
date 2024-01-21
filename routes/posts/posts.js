@@ -31,6 +31,11 @@ postsRoutes.get("/:id", fetchSinglePostController);
 postsRoutes.delete("/delete/:id", isLogin, deletePostController);
 
 // PUT /api/v1/posts/update/:id
-postsRoutes.put("/update/:id", updatePostController);
+postsRoutes.put(
+  "/update/:id",
+  isLogin,
+  upload.single("post_img"),
+  updatePostController
+);
 
 module.exports = postsRoutes;

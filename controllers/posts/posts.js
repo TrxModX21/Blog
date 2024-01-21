@@ -49,6 +49,7 @@ const fetchPostsController = async (req, res, next) => {
 
     return res.json({
       status: "success",
+      total: posts.length,
       data: posts,
     });
   } catch (err) {
@@ -107,14 +108,41 @@ const deletePostController = async (req, res, next) => {
   }
 };
 
-const updatePostController = async (req, res) => {
+const updatePostController = async (req, res, next) => {
+  const { title, description, category } = req.body;
+
   try {
-    res.json({
+    // FIND THE POST
+    const post = await Post.findById(req.params.id);
+
+    // CHECK IF THE POST BELONGS TO CURRENT USER LOGIN
+    if (post.user.toString() !== req.user) {
+      return next(appError("You are not allowed to update this post!", 403));
+    }
+
+    // UPDATE THE POST
+    const updatedPost = await Post.findByIdAndUpdate(
+      req.params.id,
+      {
+        title,
+        description,
+        category,
+        image: req.file ? req.file.path : post.image,
+      },
+      {
+        new: true,
+      }
+    );
+
+    return res.json({
       status: "success",
-      user: "Post updated!",
+      data: updatedPost,
     });
   } catch (err) {
-    res.json(err);
+    if (err.kind === "ObjectId") {
+      return next(appError("Post not found!", 404));
+    }
+    return next(appError(err.message));
   }
 };
 
