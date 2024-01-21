@@ -1,6 +1,8 @@
 const bcrypt = require("bcryptjs");
 const User = require("../../models/user/User");
 const appError = require("../../utils/appError");
+const generateToken = require("../../utils/generateToken");
+const verifyToken = require("../../utils/verifyToken");
 
 const registerController = async (req, res, next) => {
   const { fullname, email, password } = req.body;
@@ -64,10 +66,13 @@ const loginController = async (req, res, next) => {
       return next(appError("Invalid credentials!"));
     }
 
+    const { fullname, _id } = user;
+
     res.json({
       status: "success",
       msg: "User login successfully",
-      data: user,
+      data: { fullname, _id },
+      token: generateToken(_id),
     });
   } catch (err) {
     res.json(err);
@@ -76,9 +81,10 @@ const loginController = async (req, res, next) => {
 
 const userDetailsController = async (req, res) => {
   try {
+    const user = await User.findById(req.user);
     res.json({
       status: "success",
-      user: "User details",
+      user,
     });
   } catch (err) {
     res.json(err);
@@ -87,9 +93,11 @@ const userDetailsController = async (req, res) => {
 
 const userProfileController = async (req, res) => {
   try {
+    const user = await User.findById(req.user);
+
     res.json({
       status: "success",
-      user: "User profile",
+      data: user,
     });
   } catch (err) {
     res.json(err);

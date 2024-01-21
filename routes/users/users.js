@@ -10,6 +10,7 @@ const {
   updateUserController,
   logoutController,
 } = require("../../controllers/users/users");
+const isLogin = require("../../middlewares/isLogin");
 
 const userRoutes = express.Router();
 
@@ -19,11 +20,14 @@ userRoutes.post("/register", registerController);
 // POST /api/v1/users/login
 userRoutes.post("/login", loginController);
 
+// GET /api/v1/users/logout
+userRoutes.get("/logout", logoutController);
+
 // GET /api/v1/users/:id
-userRoutes.get("/:id", userDetailsController);
+userRoutes.get("/", isLogin, userDetailsController);
 
 // GET /api/v1/users/profile/:id
-userRoutes.get("/profile/:id", userProfileController);
+userRoutes.get("/profile", isLogin, userProfileController);
 
 // PUT /api/v1/users/profile-photo-upload/:id
 userRoutes.put("/profile-photo-upload/:id", uploadPhotoController);
@@ -36,8 +40,5 @@ userRoutes.put("/update-password/:id", updatePasswordController);
 
 // PUT /api/v1/users/update/:id
 userRoutes.put("/update/:id", updateUserController);
-
-// GET /api/v1/users/logout
-userRoutes.get("/logout", logoutController);
 
 module.exports = userRoutes;
