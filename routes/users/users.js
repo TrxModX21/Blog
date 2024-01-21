@@ -38,7 +38,7 @@ userRoutes.put("/cover-photo-upload/:id", uploadCoverPhotoController);
 // PUT /api/v1/users/update-password/:id
 userRoutes.put("/update-password/:id", updatePasswordController);
 
-// PUT /api/v1/users/update/:id
-userRoutes.put("/update/:id", updateUserController);
+// PUT /api/v1/users/update
+userRoutes.put("/update", isLogin, updateUserController);
 
 module.exports = userRoutes;

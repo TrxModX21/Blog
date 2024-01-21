@@ -39,7 +39,7 @@ const registerController = async (req, res, next) => {
       data: user,
     });
   } catch (err) {
-    res.json(err);
+    return next(appError(err.message));
   }
 };
 
@@ -74,11 +74,11 @@ const loginController = async (req, res, next) => {
       token: generateToken(_id),
     });
   } catch (err) {
-    res.json(err);
+    return next(appError(err.message));
   }
 };
 
-const userDetailsController = async (req, res) => {
+const userDetailsController = async (req, res, next) => {
   try {
     // GET USER ID FROM PARAMS
     const userId = req.params.id;
@@ -95,11 +95,11 @@ const userDetailsController = async (req, res) => {
       },
     });
   } catch (err) {
-    res.json(err);
+    return next(appError(err.message));
   }
 };
 
-const userProfileController = async (req, res) => {
+const userProfileController = async (req, res, next) => {
   try {
     const user = await User.findById(req.user);
 
@@ -108,7 +108,7 @@ const userProfileController = async (req, res) => {
       data: user,
     });
   } catch (err) {
-    res.json(err);
+    return next(appError(err.message));
   }
 };
 
@@ -145,14 +145,48 @@ const updatePasswordController = async (req, res) => {
   }
 };
 
-const updateUserController = async (req, res) => {
+const updateUserController = async (req, res, next) => {
+  const { fullname, email } = req.body;
+
   try {
+    // GET CURRENT USER INFO
+    const currentUser = await User.findById(req.user);
+
+    // CHECK EMAIL IS NOT TAKEN
+    if (email) {
+      const emailTaken = await User.findOne({ email });
+
+      if (emailTaken) {
+        if (emailTaken.email == currentUser.email) {
+          return res.json({
+            status: "success",
+            msg: "Data updated!",
+            data: currentUser,
+          });
+        }
+        return next(appError("Email is taken", 400));
+      }
+    }
+
+    // UPDATE THE USER
+    const updatedUser = await User.findByIdAndUpdate(
+      req.user,
+      {
+        fullname,
+        email,
+      },
+      {
+        new: true,
+      }
+    );
+
     res.json({
       status: "success",
-      user: "User update",
+      msg: "Data updated!",
+      data: updatedUser,
     });
   } catch (err) {
-    res.json(err);
+    return next(appError(err.message));
   }
 };
 
