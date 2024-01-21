@@ -1,8 +1,16 @@
 const bcrypt = require("bcryptjs");
 const User = require("../../models/user/User");
+const appError = require("../../utils/appError");
 
-const registerController = async (req, res) => {
+const registerController = async (req, res, next) => {
   const { fullname, email, password } = req.body;
+
+  // Check required field
+  if (!fullname || !email || !password) {
+    return next(
+      appError("Check your requirement field. All field is required")
+    );
+  }
 
   try {
     // Check if user already registered (email)
@@ -10,10 +18,7 @@ const registerController = async (req, res) => {
 
     // Throw an error
     if (userRegistered) {
-      return res.json({
-        status: "failed",
-        msg: "User already exist!",
-      });
+      return next(appError("User already exist!"));
     }
 
     // HASH PASSWORD
@@ -37,8 +42,11 @@ const registerController = async (req, res) => {
   }
 };
 
-const loginController = async (req, res) => {
+const loginController = async (req, res, next) => {
   const { email, password } = req.body;
+  if (!email || !password) {
+    return next(appError("Email and password can't be empty!"));
+  }
 
   try {
     // Check if email exist
@@ -46,20 +54,14 @@ const loginController = async (req, res) => {
 
     // Throw an error
     if (!user) {
-      return res.json({
-        status: "failed",
-        msg: "This email not registering in our database!",
-      });
+      return next(appError("This email not registering in our database!"));
     }
 
     // Verify password hash
     const checkPasswordHash = await bcrypt.compare(password, user.password);
 
     if (!checkPasswordHash) {
-      return res.json({
-        status: "failed",
-        msg: "Invalid credentials!",
-      });
+      return next(appError("Invalid credentials!"));
     }
 
     res.json({
