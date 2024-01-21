@@ -2,7 +2,6 @@ const bcrypt = require("bcryptjs");
 const User = require("../../models/user/User");
 const appError = require("../../utils/appError");
 const generateToken = require("../../utils/generateToken");
-const verifyToken = require("../../utils/verifyToken");
 
 const registerController = async (req, res, next) => {
   const { fullname, email, password } = req.body;
@@ -81,10 +80,19 @@ const loginController = async (req, res, next) => {
 
 const userDetailsController = async (req, res) => {
   try {
-    const user = await User.findById(req.user);
+    // GET USER ID FROM PARAMS
+    const userId = req.params.id;
+    const user = await User.findById(userId);
+    const { fullname, email, posts, comments } = user;
+
     res.json({
       status: "success",
-      user,
+      data: {
+        fullname,
+        email,
+        posts,
+        comments,
+      },
     });
   } catch (err) {
     res.json(err);

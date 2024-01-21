@@ -23,11 +23,11 @@ userRoutes.post("/login", loginController);
 // GET /api/v1/users/logout
 userRoutes.get("/logout", logoutController);
 
-// GET /api/v1/users/:id
-userRoutes.get("/", isLogin, userDetailsController);
-
-// GET /api/v1/users/profile/:id
+// GET /api/v1/users/profile
 userRoutes.get("/profile", isLogin, userProfileController);
+
+// GET /api/v1/users/:id
+userRoutes.get("/:id", userDetailsController);
 
 // PUT /api/v1/users/profile-photo-upload/:id
 userRoutes.put("/profile-photo-upload/:id", uploadPhotoController);
