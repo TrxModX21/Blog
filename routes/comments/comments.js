@@ -19,6 +19,6 @@ commentsRoutes.get("/:id", commentDetailController);
 commentsRoutes.delete("/delete/:id", isLogin, deleteCommentController);
 
 // PUT /api/v1/comments/:id
-commentsRoutes.put("/update/:id", updateCommentController);
+commentsRoutes.put("/update/:id", isLogin, updateCommentController);
 
 module.exports = commentsRoutes;

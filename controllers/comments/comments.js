@@ -79,14 +79,36 @@ const deleteCommentController = async (req, res, next) => {
   }
 };
 
-const updateCommentController = async (req, res) => {
+const updateCommentController = async (req, res, next) => {
   try {
-    res.json({
+    // FIND THE COMMENT
+    const comment = await Comment.findById(req.params.id);
+
+    // CHECK IF THE COMMENT BELONGS TO CURRENT USER LOGIN
+    if (comment.user.toString() !== req.user) {
+      return next(appError("You are not allowed to update this post!", 403));
+    }
+
+    // UPDATE THE COMMENT
+    const updatedComment = await Comment.findByIdAndUpdate(
+      req.params.id,
+      {
+        message: req.body.message,
+      },
+      {
+        new: true,
+      }
+    );
+
+    return res.json({
       status: "success",
-      user: "Comment updated!",
+      data: updatedComment,
     });
   } catch (err) {
-    res.json(err);
+    if (err.kind === "ObjectId") {
+      return next(appError("Post not found!", 404));
+    }
+    return next(appError(err.message));
   }
 };
 
