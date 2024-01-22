@@ -16,7 +16,7 @@ commentsRoutes.post("/create/:id", isLogin, createCommentController);
 commentsRoutes.get("/:id", commentDetailController);
 
 // DELETE /api/v1/comments/:id
-commentsRoutes.delete("/delete/:id", deleteCommentController);
+commentsRoutes.delete("/delete/:id", isLogin, deleteCommentController);
 
 // PUT /api/v1/comments/:id
 commentsRoutes.put("/update/:id", updateCommentController);

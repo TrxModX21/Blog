@@ -13,6 +13,7 @@ const createCommentController = async (req, res, next) => {
     // CREATE THE COMMENT
     const comment = await Comment.create({
       user: user._id,
+      post: req.params.id,
       message,
     });
 
@@ -44,14 +45,37 @@ const commentDetailController = async (req, res) => {
   }
 };
 
-const deleteCommentController = async (req, res) => {
+const deleteCommentController = async (req, res, next) => {
   try {
-    res.json({
+    // FIND THE COMMENT POST AND USER
+    const comment = await Comment.findById(req.params.id);
+    const post = await Post.findById(comment.post);
+    const user = await User.findById(req.user);
+
+    // CHECK IF THE COMMENT BELONGS TO CURRENT USER LOGIN
+    if (comment.user.toString() !== req.user) {
+      return next(appError("You are not allowed to delete this comment!", 403));
+    }
+
+    // DELETE THE COMMENT
+    const deletedComment = await Comment.findByIdAndDelete(req.params.id);
+    post.comments.splice(post.comments.indexOf(req.params.id), 1);
+    user.comments.splice(user.comments.indexOf(req.params.id), 1);
+
+    // RESAVE USER
+    post.save();
+    user.save();
+
+    return res.json({
       status: "success",
-      user: "Comment deleted!",
+      msg: "Comment deleted!",
+      data: deletedComment,
     });
   } catch (err) {
-    res.json(err);
+    if (err.kind === "ObjectId") {
+      return next(appError("Comment not found!", 404));
+    }
+    return next(appError(err.message));
   }
 };
 
