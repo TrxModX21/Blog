@@ -5,11 +5,12 @@ const {
   deleteCommentController,
   updateCommentController,
 } = require("../../controllers/comments/comments");
+const isLogin = require("../../middlewares/isLogin");
 
 const commentsRoutes = express.Router();
 
 // POST /api/v1/comments/create
-commentsRoutes.post("/create", createCommentController);
+commentsRoutes.post("/create/:id", isLogin, createCommentController);
 
 // GET /api/v1/comments/:id
 commentsRoutes.get("/:id", commentDetailController);
