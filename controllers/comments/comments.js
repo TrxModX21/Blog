@@ -34,14 +34,21 @@ const createCommentController = async (req, res, next) => {
   }
 };
 
-const commentDetailController = async (req, res) => {
+const commentDetailController = async (req, res, next) => {
   try {
-    res.json({
+    const comment = await Comment.findById(req.params.id)
+      .populate("user")
+      .populate("post");
+
+    return res.json({
       status: "success",
-      user: "Comment details!",
+      data: comment,
     });
   } catch (err) {
-    res.json(err);
+    if (err.kind === "ObjectId") {
+      return next(appError("Comment not found!", 404));
+    }
+    return next(appError(err.message));
   }
 };
 
