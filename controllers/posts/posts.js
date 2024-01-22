@@ -45,7 +45,7 @@ const createPostController = async (req, res, next) => {
 
 const fetchPostsController = async (req, res, next) => {
   try {
-    const posts = await Post.find();
+    const posts = await Post.find().populate("comments");
 
     return res.json({
       status: "success",
@@ -63,7 +63,7 @@ const fetchSinglePostController = async (req, res, next) => {
     const id = req.params.id;
 
     // GET THE POST
-    const post = await Post.findById(id);
+    const post = await Post.findById(id).populate('comments');
 
     return res.json({
       status: "success",

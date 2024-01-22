@@ -86,9 +86,9 @@ const userDetailsController = async (req, res, next) => {
   try {
     // GET USER ID FROM PARAMS
     const userId = req.params.id;
-    const { fullname, email, posts, comments } = await User.findById(
-      userId
-    ).populate("posts");
+    const { fullname, email, posts, comments } = await User.findById(userId)
+      .populate("posts")
+      .populate("comments");
 
     return res.json({
       status: "success",
